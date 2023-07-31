@@ -10,6 +10,7 @@ python-multipart = "*"
 pandas = "*"
 python-dotenv = "*"
 openai = "*"
+duckdb = "*"
 
 [dev-packages]
 
