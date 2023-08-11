@@ -4,10 +4,12 @@ import pandas as pd
 import traceback
 from pydantic import BaseModel
 from ttt.chat import table_chat, error_chat
-from ttt.utils import convert_scientific_to_number
+from ttt.validate import validate_csv
+from ttt.utils import convert_string_to_datestring
 import uuid
 import duckdb
 import json
+import os
 
 
 app = FastAPI()
@@ -38,31 +40,14 @@ async def root():
 @app.post("/upload")
 def upload(file: UploadFile = File(...)):
     print("POST /upload")
-    tabledata = [
-        {"id": 1, "name": "Oliver", "age": "12", "col": "red", "dob": ""},
-        {"id": 2, "name": "Mary May", "age": "1", "col": "blue", "dob": "14/05/1982"},
-        {
-            "id": 3,
-            "name": "Christine Lobowski",
-            "age": "42",
-            "col": "green",
-            "dob": "22/05/1982",
-        },
-        {
-            "id": 4,
-            "name": "Brendon Philips",
-            "age": "125",
-            "col": "orange",
-            "dob": "01/08/1980",
-        },
-        {
-            "id": 5,
-            "name": "Margret Marmajuke",
-            "age": "16",
-            "col": "yellow",
-            "dob": "31/01/1999",
-        },
-    ]
+
+    #cwd = os.getcwd()
+    #print(cwd)
+    #try:
+    #    file_size = os.stat(cwd)
+    #    print(file_size.st_size)
+    #except FileNotFoundError:
+    #    print("File not found.")
 
     session = None
 
@@ -70,12 +55,15 @@ def upload(file: UploadFile = File(...)):
         # with open(file.filename, 'wb') as f:
         # while contents := file.file.read(1024 * 1024):
         #     f.write(contents)
-        table = pd.read_csv(file.file)
-        table.columns = table.columns.str.replace(" ", "_")
-        table = table.applymap(convert_scientific_to_number)
+        table = pd.read_csv(file.file, header=0)
+        table = validate_csv(table)
         session = str(uuid.uuid4())
         tables[session] = table
         tabledata = table.to_json(orient="records")
+    except ValueError as e:
+        raise HTTPException(
+            status_code=422, detail=e.args[0]
+        )
     except Exception:
         traceback.print_exc()
         raise HTTPException(
@@ -116,4 +104,5 @@ def do_chat(chat_request: ChatRequest):
             status_code=500, detail=text_response
         )
 
+    #response_df = response_df.applymap(convert_string_to_datestring) 
     return {"message": response, "table": response_df.to_json(orient="records")}
