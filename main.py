@@ -25,6 +25,7 @@ app.add_middleware(
 
 tables = {}
 sessions = {}
+MAX_ROWS = 10000
 
 
 class ChatRequest(BaseModel):
@@ -75,7 +76,7 @@ def upload(file: UploadFile = File(...)):
         # while contents := file.file.read(1024 * 1024):
         #     f.write(contents)
         session_check()
-        table = pd.read_csv(file.file, header=0)
+        table = pd.read_csv(file.file, header=0, skipinitialspace=True, nrows=MAX_ROWS, on_bad_lines='skip', encoding_errors='ignore', sep=None)
         table = validate_csv(table)
         session = str(uuid.uuid4())
         # tables[session] = table

@@ -22,6 +22,7 @@ def validate_csv(csv_table_df):
 
 
     csv_table_df.columns = csv_table_df.columns.str.replace(" ", "_")
+    csv_table_df.columns = csv_table_df.columns.str.replace(r"[^a-zA-Z0-9_]", "", regex=True)
     csv_table_df = csv_table_df.applymap(convert_scientific_to_number)
     #csv_table_df = csv_table_df.applymap(convert_string_to_date)
     csv_table_df = csv_table_df.applymap(convert_string_to_datestring)
