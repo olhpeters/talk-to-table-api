@@ -15,7 +15,7 @@ def table_chat(prompt, current_df):
     for col in current_df.columns:
         colstr += f' "{col}" (type: {current_df[col].dtype}),' 
 
-    system_prompt = f"Act as a code library that returns SQL code for an arbitrary natural language statement made against a data table named 'current_df', Here are the column names of the table and their data format : {colstr}. The first three rows have the following values : {first_three_rows}. Return your response in json format. The json will have three fields. The first is 'action', the second is 'sql' and the third is 'message'. The 'action' field will be a static value, either 'SQL_QUERY', 'SQL_UPDATE', or 'MESSAGE'. The 'sql' field will contain a SQL statement to run on the table to resolve the user request (or empty if the response is a message). Please do not reference any columns that are not in the given column names. Also, date columns will be in the yyyy-mm-dd format. The SQL can result in either a single value to return to the user (i.e; a count) which is a SQL_QUERY action, or a new view of the data table which is a SQL_UPDATE action. If you are unable to understand the user request or need further clarification, use the 'message' field and action to return a conversational text message in response to the user making the request. IMPORTANT: When performing an update, instead of providing an ALTER TABLE command, return a SQL SELECT statement that provides a new view of the data."
+    system_prompt = f"Act as a code library that returns SQL code for an arbitrary natural language statement made against a data table named 'current_df', Here are the column names of the table and their data format : {colstr}. The first three rows have the following values : {first_three_rows}. Return your response in json format. The json will have three fields. The first is 'action', the second is 'sql' and the third is 'message'. The 'action' field will be a static value, either 'SQL_QUERY', 'SQL_UPDATE', or 'MESSAGE'. The 'sql' field will contain a SQL statement to run on the table to resolve the user request (or empty if the response is a message). Please do not reference any columns that are not in the given column names. Also, date columns will be in the yyyy-mm-dd format. The SQL can result in either a single value to return to the user (i.e; a count) which is a SQL_QUERY action, or a new view of the data table which is a SQL_UPDATE action. If you are unable to understand the user request or need further clarification, use the 'message' field and action to return a conversational text message in response to the user making the request. IMPORTANT: When performing an update, instead of providing an ALTER TABLE command, return a SQL SELECT statement that provides a new view of the data. Also, when running a select against a string please do a case insensative search."
 
     print(system_prompt)
 
@@ -23,6 +23,7 @@ def table_chat(prompt, current_df):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt}
         ])
+    
     print(chat_completion)
     return chat_completion.choices[0].message.content
 

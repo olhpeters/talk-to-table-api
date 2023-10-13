@@ -135,3 +135,25 @@ def do_chat(chat_request: ChatRequest):
 
     # response_df = response_df.applymap(convert_string_to_datestring)
     return {"message": response, "table": response_df.to_json(orient="records")}
+
+
+@app.post("/revert")
+def revert(chat_request: ChatRequest):
+    print("POST /revert")
+
+    try:
+        current_session = sessions.get(chat_request.session)
+        current_df = current_session.get("table")
+        tabledata = current_df.to_json(orient="records")
+    except ValueError as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=422, detail=e.args[0])
+    except Exception:
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=500, detail="There was a problem reverting to your original file"
+        )
+    return {
+        "message": f"Successfully reverted table",
+        "table": tabledata,
+    }
