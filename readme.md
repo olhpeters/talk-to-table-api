@@ -2,7 +2,9 @@
 
 Talk to Table lets you upload a data table (in CSV format) and interact with it by "talking" to it in natural language (currently by typing in a text box).  It uses AI on the back-end (using the OpenAI rest api) to convert your natural language into a SQL statement that can extract and make changes to the data table.
 
-This GitHub project is the backend python server code that handles the upload file and talk input requests.  The front-end code will be published separately at a later date.77
+This GitHub project is the backend python server code that handles the upload file and talk input requests.  The front-end code will be published separately at a later date.
+
+URL for this app is: [link](https://olhpeters.github.io/talktotable)
 
 
 ### Quick Start
